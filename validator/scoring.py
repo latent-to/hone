@@ -166,9 +166,13 @@ async def set_weights(chain, config, scores: Dict[int, float], version: int = 0)
             uids = sorted(weights.keys())
             weight_values = [weights[u] for u in uids]
 
-    logger.info(f"Setting weights for {len(uids)} UIDs")
-    logger.debug(f"UIDs: {uids[:10]}..." if len(uids) > 10 else f"UIDs: {uids}")
-    logger.debug(f"Weights: {weight_values[:10]}..." if len(weight_values) > 10 else f"Weights: {weight_values}")
+    non_zero_indices = [i for i, w in enumerate(weight_values) if w > 0]
+    non_zero_uids = [uids[i] for i in non_zero_indices]
+    non_zero_weights = [weight_values[i] for i in non_zero_indices]
+
+    logger.info(f"Setting weights for {len(uids)} UIDs ({len(non_zero_uids)} non-zero)")
+    logger.debug(f"Non-zero UIDs: {non_zero_uids[:10]}..." if len(non_zero_uids) > 10 else f"Non-zero UIDs: {non_zero_uids}")
+    logger.debug(f"Non-zero Weights: {non_zero_weights[:10]}..." if len(non_zero_weights) > 10 else f"Non-zero Weights: {non_zero_weights}")
 
     # Ensure we have a connection
     if not chain.substrate:
